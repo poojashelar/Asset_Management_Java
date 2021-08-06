@@ -44,9 +44,9 @@ public class AccountsService {
   public void transferMoney(TransferRequestDetails transferRequestDetails) throws InsufficientBalanceException, AccountDoesNotExistsException {
 
     SyncAccount fromAccount = (SyncAccount) this.accountsRepository
-            .getAccount(transferRequestDetails.getFromAccountId());
+            .getAccount(transferRequestDetails.getFromAccountId()); //Get Sender's Account details from account Id
     SyncAccount toAccount = (SyncAccount) this.accountsRepository
-            .getAccount(transferRequestDetails.getToAccountId());
+            .getAccount(transferRequestDetails.getToAccountId());  ////Get Receiver's Account details from account Id
 
     try {
       boolean isFromAccountLocked = fromAccount.getLock().tryLock(Long.valueOf(connectionTimeout), TimeUnit.MILLISECONDS);
@@ -72,8 +72,8 @@ public class AccountsService {
     BigDecimal amount = transferRequestDetails.getAmount();
 
     if ((fromAccount.getBalance().compareTo(amount)) >= 0) {
-      fromAccount.setBalance(fromAccount.getBalance().subtract(amount));
-      toAccount.setBalance(toAccount.getBalance().add(amount));
+      fromAccount.setBalance(fromAccount.getBalance().subtract(amount)); // Deduct Amount
+      toAccount.setBalance(toAccount.getBalance().add(amount)); // Credit amount
 
       notificationService.notifyAboutTransfer(fromAccount, "Amount Debited: " + amount + ". You have successfully transferred amount: " + amount + " to AccountID: " + toAccount.getAccountId());
       notificationService.notifyAboutTransfer(toAccount, "Amount Credited: " + amount + ". You have received amount: " + amount + " from AccountID: " + fromAccount.getAccountId());
