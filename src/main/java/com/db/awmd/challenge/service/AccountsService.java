@@ -25,12 +25,12 @@ public class AccountsService {
   private String connectionTimeout;
 
   @Setter
+  @Autowired
   private NotificationService notificationService;
 
   @Autowired
   public AccountsService(AccountsRepository accountsRepository) {
     this.accountsRepository = accountsRepository;
-    this.notificationService = new EmailNotificationService();
   }
 
   public void createAccount(Account account) {

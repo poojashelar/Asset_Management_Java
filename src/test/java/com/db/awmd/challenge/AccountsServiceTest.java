@@ -117,26 +117,7 @@ public class AccountsServiceTest {
     }catch (InsufficientBalanceException insufficientBalanceException){
       assertThat(insufficientBalanceException.getMessage()).isEqualTo("Insufficient account balance in accountId:"+fromAccountId+"to perform this transaction");
     }
-
   }
-
-
-  @Test
-  public void transferAmountNegativeAmount() throws Exception{
-    String fromAccountId = "Id-fromAccount";
-    String toAccountId = "Id-toAccount";
-
-    this.accountsService.createAccount(new Account(fromAccountId, new BigDecimal(1000)));
-    this.accountsService.createAccount(new Account(toAccountId, new BigDecimal(1000)));
-
-    try {
-      this.accountsService.transferMoney(new TransferRequestDetails(fromAccountId, toAccountId, new BigDecimal(-1)));
-    }catch (InsufficientBalanceException insufficientBalanceException){
-      assertThat(insufficientBalanceException.getMessage()).isEqualTo("Insufficient account balance in accountId:"+fromAccountId+"to perform this transaction");
-    }
-
-  }
-
 
   @Test
   public void transferAmountCheckNotification() throws Exception{
