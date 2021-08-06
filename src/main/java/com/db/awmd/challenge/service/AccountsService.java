@@ -30,13 +30,14 @@ public class AccountsService {
   @Autowired
   public AccountsService(AccountsRepository accountsRepository) {
     this.accountsRepository = accountsRepository;
+    this.notificationService = new EmailNotificationService();
   }
 
   public void createAccount(Account account) {
     this.accountsRepository.createAccount(account);
   }
 
-  public Account getAccount(String accountId) {
+  public Account getAccount(String accountId) throws  AccountDoesNotExistsException {
     return this.accountsRepository.getAccount(accountId);
   }
 

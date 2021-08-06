@@ -14,6 +14,7 @@ import com.db.awmd.challenge.service.AccountsService;
 import java.math.BigDecimal;
 
 import com.db.awmd.challenge.service.NotificationService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -27,6 +28,13 @@ public class AccountsServiceTest {
 
   @Autowired
   private AccountsService accountsService;
+
+  @Before
+  public void clearAccountsData() {
+    // Reset the existing accounts before each test.
+    accountsService.getAccountsRepository().clearAccounts();
+  }
+
 
   @Test
   public void addAccount() throws Exception {
@@ -69,7 +77,11 @@ public class AccountsServiceTest {
   @Test
   public void getAccountDoesNotExist(){
     String uniqueId = "Id-" + System.currentTimeMillis();
-    this.accountsService.getAccount(uniqueId);
+    try {
+      this.accountsService.getAccount(uniqueId);
+    } catch (AccountDoesNotExistsException ex) {
+      assertThat(ex.getMessage()).isEqualTo("Account id " + uniqueId + " does not exists!");
+    }
 
   }
 

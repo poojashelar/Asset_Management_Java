@@ -5,13 +5,7 @@ import com.db.awmd.challenge.domain.TransferRequestDetails;
 import com.db.awmd.challenge.exception.AccountDoesNotExistsException;
 import com.db.awmd.challenge.exception.DuplicateAccountIdException;
 import com.db.awmd.challenge.exception.InsufficientBalanceException;
-import com.db.awmd.challenge.exception.TransactionFailedException;
 import com.db.awmd.challenge.service.AccountsService;
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/v1/accounts")
@@ -47,21 +41,15 @@ public class AccountsController {
   }
 
   @GetMapping(path = "/{accountId}")
-  public Account getAccount(@PathVariable String accountId) {
+  public ResponseEntity<Object> getAccount(@PathVariable String accountId) {
     log.info("Retrieving account for id {}", accountId);
-    return this.accountsService.getAccount(accountId);
+    try {
+      Account account = this.accountsService.getAccount(accountId);
+      return new ResponseEntity<Object>(account, HttpStatus.OK);
+    }catch (AccountDoesNotExistsException accountDoesNotExistsException){
+      return new ResponseEntity<Object>(accountDoesNotExistsException.getMessage(), HttpStatus.NOT_FOUND);
+    }
   }
-
-//  @PostMapping(path ="/{fromAccountId}/transfer")
-//  public ResponseEntity<Object> transferMoney(@PathVariable String fromAccountId, @RequestBody TransferMoneyDetails transferMoneyDetails){
-//  //  log.info("Transferring amount: "+ transferMoneyDetails.amount + " from Account Id: " + fromAccountId + "To Account Id :" + transferMoneyDetails.getAccountId());
-//    try {
-//      this.accountsService.transferMoney(fromAccountId, transferMoneyDetails.toAccount, transferMoneyDetails.amount);
-//    } catch (TransactionFailedException tfe){
-//      return new ResponseEntity<>(tfe.getMessage(), HttpStatus.BAD_REQUEST);
-//    }
-//    return new ResponseEntity<>(HttpStatus.OK);
-//  }
 
   @PutMapping(path = "/transfer")
   public ResponseEntity<Object> amountTransfer(@RequestBody @Valid TransferRequestDetails transferRequestDetails){
